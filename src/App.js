@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import MemberManagement from './components/MemberManagement';
@@ -17,15 +17,56 @@ const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  // States
-  const [members, setMembers] = useState([]);
-  const [trainers, setTrainers] = useState([]);
-  const [packages, setPackages] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [inventory, setInventory] = useState([]);
-  const [attendance, setAttendance] = useState([]);
+  // const [members, setMembers] = useState([]);
+  // const [trainers, setTrainers] = useState([]);
+  // const [packages, setPackages] = useState([]);
+  // const [invoices, setInvoices] = useState([]);
+  // const [inventory, setInventory] = useState([]);
+  // const [attendance, setAttendance] = useState([]);
 
-  // Generic helpers (converted to JS)
+  const [members, setMembers] = useState(
+    JSON.parse(localStorage.getItem("members")) || []
+  );
+  const [trainers, setTrainers] = useState(
+    JSON.parse(localStorage.getItem("trainers")) || []
+  );
+  const [packages, setPackages] = useState(
+    JSON.parse(localStorage.getItem("packages")) || []
+  );
+  const [invoices, setInvoices] = useState(
+    JSON.parse(localStorage.getItem("invoices")) || []
+  );
+  const [inventory, setInventory] = useState(
+    JSON.parse(localStorage.getItem("inventory")) || []
+  );
+  const [attendance, setAttendance] = useState(
+    JSON.parse(localStorage.getItem("attendance")) || []
+  );
+
+  useEffect(() => {
+    localStorage.setItem("members", JSON.stringify(members));
+  }, [members]);
+
+  useEffect(() => {
+    localStorage.setItem("trainers", JSON.stringify(trainers));
+  }, [trainers]);
+
+  useEffect(() => {
+    localStorage.setItem("packages", JSON.stringify(packages));
+  }, [packages]);
+
+  useEffect(() => {
+    localStorage.setItem("invoices", JSON.stringify(invoices));
+  }, [invoices]);
+
+  useEffect(() => {
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+  }, [inventory]);
+
+  useEffect(() => {
+    localStorage.setItem("attendance", JSON.stringify(attendance));
+  }, [attendance]);
+
   const addEntity = (list, set, item) => {
     set([item, ...list]);
   };
@@ -232,3 +273,4 @@ const App = () => {
 };
 
 export default App;
+

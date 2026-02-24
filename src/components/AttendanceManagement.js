@@ -153,48 +153,91 @@ const AttendanceManagement = ({ records, members, onAdd, onUpdate, onDelete }) =
 
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md">
-          <div className="bg-slate-900 border-t md:border border-slate-700 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl">
+    {isModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md">
 
-            <div className="p-8 border-b border-slate-800 flex justify-between items-center">
-              <h3 className="text-2xl font-black text-white tracking-tight">
-                Manual Log
-              </h3>
-              <button onClick={() => setIsModalOpen(false)}>
-                Close
-              </button>
-            </div>
+    <div className="bg-slate-900 border-t md:border border-slate-700 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl animate-in slide-in-from-bottom md:zoom-in duration-300">
 
-            <form onSubmit={handleManualLog} className="p-8 space-y-6">
-
-              <select
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
-                value={selectedMemberId}
-                onChange={(e) => setSelectedMemberId(e.target.value)}
-              >
-                <option value="">Choose active identity...</option>
-                {members.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.fullName} ({m.id})
-                  </option>
-                ))}
-              </select>
-
-              <div className="pt-4 flex space-x-4">
-                <button type="button" onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </button>
-                <button type="submit">
-                  Authorize Access
-                </button>
-              </div>
-
-            </form>
-          </div>
+      {/* Header */}
+      <div className="p-8 border-b border-slate-800 flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-black text-white tracking-tight">
+            Manual Log
+          </h3>
+          <p className="text-slate-500 text-[10px] mt-1 font-black uppercase tracking-widest tracking-tighter">
+            Override System Entry
+          </p>
         </div>
-      )}
+
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(false)}
+          className="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition-all"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleManualLog} className="p-8 space-y-6">
+
+        {/* Member Selection */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+            Member Identification
+          </label>
+
+          <select
+            required
+            className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-lime-500/30 outline-none transition-all appearance-none"
+            value={selectedMemberId}
+            onChange={(e) => setSelectedMemberId(e.target.value)}
+          >
+            <option value="">Choose active identity...</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.fullName} ({m.id})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Buttons */}
+        <div className="pt-4 flex space-x-4">
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+            className="flex-1 px-4 py-4 rounded-2xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="flex-1 px-4 py-4 rounded-2xl bg-lime-500 text-slate-900 font-black hover:bg-lime-400 transition-all shadow-xl shadow-lime-500/20 active:scale-95"
+          >
+            Authorize Access
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
+
 
     </div>
   );

@@ -153,62 +153,143 @@ const BillingManagement = ({ invoices, members, onAdd, onUpdate, onDelete }) => 
 
       {/* MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md">
-          <div className="bg-slate-900 border-t md:border border-slate-700 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl">
-            <form onSubmit={handleCreateInvoice} className="p-8 space-y-6">
-              <select
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
-                onChange={e => {
-                  const member = members.find(m => m.id === e.target.value);
-                  if (member)
-                    setFormData({
-                      ...formData,
-                      memberId: member.id,
-                      memberName: member.fullName
-                    });
-                }}
-              >
-                <option value="">Choose active identity...</option>
-                {members.map(m => (
-                  <option key={m.id} value={m.id}>
-                    {m.fullName} ({m.id})
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="number"
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
-                value={formData.amount}
-                onChange={e =>
-                  setFormData({
-                    ...formData,
-                    amount: Number(e.target.value)
-                  })
-                }
-              />
-
-              <div className="flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-4 rounded-2xl bg-slate-800 text-white font-bold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-4 rounded-2xl bg-lime-500 text-slate-900 font-black"
-                >
-                  Verify & Post
-                </button>
-              </div>
-            </form>
-          </div>
+  <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/90 backdrop-blur-md">
+    
+    <div className="bg-slate-900 border-t md:border border-slate-700 w-full max-w-lg rounded-t-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl animate-in slide-in-from-bottom md:zoom-in duration-300">
+      
+      {/* Header */}
+      <div className="p-8 border-b border-slate-800 flex justify-between items-center">
+        <div>
+          <h3 className="text-2xl font-black text-white tracking-tight">
+            Financial Manifest
+          </h3>
+          <p className="text-slate-500 text-[10px] mt-1 font-black uppercase tracking-widest tracking-tighter">
+            New Ledger Entry
+          </p>
         </div>
-      )}
+
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(false)}
+          className="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition-all"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleCreateInvoice} className="p-8 space-y-6">
+
+        {/* Member Selection */}
+        <div className="space-y-2">
+          <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+            Member Selection
+          </label>
+          <select
+            required
+            className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-lime-500/30 outline-none transition-all appearance-none"
+            onChange={(e) => {
+              const member = members.find(
+                (m) => m.id === e.target.value
+              );
+              if (member) {
+                setFormData({
+                  ...formData,
+                  memberId: member.id,
+                  memberName: member.fullName
+                });
+              }
+            }}
+          >
+            <option value="">Choose active identity...</option>
+            {members.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.fullName} ({m.id})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Amount + Status */}
+        <div className="grid grid-cols-2 gap-4">
+          
+          {/* Amount */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+              Valuation (₹)
+            </label>
+            <input
+              type="number"
+              required
+              className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-lime-500/30 outline-none transition-all"
+              value={formData.amount}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  amount: Number(e.target.value)
+                })
+              }
+            />
+          </div>
+
+          {/* Status */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+              Status
+            </label>
+            <select
+              className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white focus:ring-2 focus:ring-lime-500/30 outline-none transition-all"
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  status: e.target.value
+                })
+              }
+            >
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+
+        </div>
+
+        {/* Buttons */}
+        <div className="pt-4 flex space-x-4">
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+            className="flex-1 px-4 py-4 rounded-2xl bg-slate-800 text-white font-bold hover:bg-slate-700 transition-all"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="flex-1 px-4 py-4 rounded-2xl bg-lime-500 text-slate-900 font-black hover:bg-lime-400 transition-all shadow-xl shadow-lime-500/20 active:scale-95"
+          >
+            Verify & Post
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

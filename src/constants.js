@@ -2,8 +2,8 @@
 import React from 'react';
 
 export const COLORS = {
-  primary: '#84cc16', // Neon Green
-  secondary: '#0ea5e9', // Blue
+  primary: '#84cc16', 
+  secondary: '#0ea5e9', 
   bgDark: '#0f172a',
   bgCard: '#1e293b',
   textMain: '#f8fafc',

@@ -169,11 +169,82 @@ const MemberManagement = ({ members, onAdd, onUpdate, onDelete, onView }) => {
                       </span>
                     </td>
 
-                    <td className="px-6 py-5 text-right space-x-2">
-                      <button onClick={() => onView(member)}>View</button>
-                      <button onClick={() => handleOpenEdit(member)}>Edit</button>
-                      <button onClick={() => onDelete(member.id)}>Delete</button>
+                   <td className="px-6 py-5 text-right">
+                      <div className="flex justify-end space-x-2">
+
+                        {/* View Button */}
+                        <button
+                          type="button"
+                          onClick={() => onView(member)}
+                          className="p-2.5 text-blue-400 hover:text-white bg-blue-500/10 hover:bg-blue-500 rounded-xl transition-all"
+                          title="View Details"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
+
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(member)}
+                          className="p-2.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-xl transition-all"
+                          title="Edit Profile"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                            <path d="m15 5 4 4" />
+                          </svg>
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          onClick={() => onDelete(member.id)}
+                          className="p-2.5 text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 rounded-xl transition-all"
+                          title="Delete"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                          </svg>
+                        </button>
+
+                      </div>
                     </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -187,43 +258,213 @@ const MemberManagement = ({ members, onAdd, onUpdate, onDelete, onView }) => {
       </div>
 
       {/* MODAL */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-xl rounded-[2.5rem] shadow-2xl">
-            <form
-              onSubmit={handleSubmit}
-              className="p-8 space-y-6 max-h-[75vh] overflow-y-auto"
-            >
-              <input
-                required
-                className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
-                value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
-              />
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md">
+            <div className="bg-slate-900 border border-slate-700 w-full max-w-xl rounded-[2.5rem] shadow-2xl">
+              <form
+                onSubmit={handleSubmit}
+                className="p-8 space-y-6 max-h-[75vh] overflow-y-auto"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-              <div className="pt-4 flex space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 px-4 py-4 rounded-2xl bg-slate-800 text-white"
-                >
-                  Cancel
-                </button>
+      {/* Full Name */}
+      <div className="md:col-span-2 space-y-2">
+        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+          Full Identity Name
+        </label>
+        <input
+          required
+          className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+          value={formData.fullName}
+          onChange={(e) =>
+            setFormData({ ...formData, fullName: e.target.value })
+          }
+        />
+      </div>
 
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-4 rounded-2xl bg-lime-500 text-slate-900 font-black"
-                >
-                  Authorize Identity
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Phone */}
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+          Contact Phone
+        </label>
+        <input
+          className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+          value={formData.phone}
+          onChange={(e) =>
+            setFormData({ ...formData, phone: e.target.value })
+          }
+        />
+      </div>
+
+    {/* Gender */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Gender Identity
+      </label>
+      <select
+        className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.gender}
+        onChange={(e) =>
+          setFormData({ ...formData, gender: e.target.value })
+        }
+      >
+        <option>Male</option>
+        <option>Female</option>
+        <option>Non-Binary</option>
+      </select>
     </div>
+
+    {/* Age */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Biological Age
+      </label>
+      <input
+        type="number"
+        required
+        className="w-full bg-slate-950 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.age}
+        onChange={(e) =>
+          setFormData({ ...formData, age: Number(e.target.value) })
+        }
+      />
+    </div>
+
+    {/* Weight */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Mass (kg)
+      </label>
+      <input
+        type="number"
+        className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.weight}
+        onChange={(e) =>
+          setFormData({ ...formData, weight: Number(e.target.value) })
+        }
+      />
+    </div>
+
+    {/* Height */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Stature (cm)
+      </label>
+      <input
+        type="number"
+        className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.height}
+        onChange={(e) =>
+          setFormData({ ...formData, height: Number(e.target.value) })
+        }
+      />
+    </div>
+
+    {/* Fitness Goal */}
+    <div className="md:col-span-2 space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Fitness Goal
+      </label>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+        {fitnessGoals.map((g) => (
+          <button
+            key={g}
+            type="button"
+            onClick={() =>
+              setFormData({ ...formData, goal: g })
+            }
+            className={`py-2.5 rounded-xl border font-black text-[9px] uppercase tracking-widest ${
+              formData.goal === g
+                ? "bg-lime-500 border-lime-500 text-slate-900"
+                : "bg-slate-950 border-slate-800 text-slate-500"
+            }`}
+          >
+            {g}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Membership Plan */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Membership Plan
+      </label>
+      <select
+        className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.membershipType}
+        onChange={(e) =>
+          setFormData({ ...formData, membershipType: e.target.value })
+        }
+      >
+        <option value="Monthly">Monthly</option>
+        <option value="Quarterly">Quarterly</option>
+        <option value="Yearly">Yearly</option>
+      </select>
+    </div>
+
+    {/* Payment Status */}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Ledger Status
+      </label>
+      <select
+        className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        value={formData.paymentStatus}
+        onChange={(e) =>
+          setFormData({ ...formData, paymentStatus: e.target.value })
+        }
+      >
+        <option value="Paid">Paid</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+
+    {/* Medical Conditions */}
+    <div className="md:col-span-2 space-y-1">
+      <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest ml-1">
+        Medical Conditions (Comma separated)
+      </label>
+      <input
+        className="w-full bg-slate-900 border border-slate-800 rounded-2xl px-5 py-4 text-white"
+        placeholder="None"
+        value={formData.healthConditions?.join(", ")}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            healthConditions: e.target.value
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+          })
+        }
+      />
+    </div>
+
+  </div>
+
+
+                <div className="pt-4 flex space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 px-4 py-4 rounded-2xl bg-slate-800 text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-4 rounded-2xl bg-lime-500 text-slate-900 font-black"
+                  >
+                    Authorize Identity
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
   );
 };
 
