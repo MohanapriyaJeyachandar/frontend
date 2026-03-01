@@ -1,27 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from "../services/axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('admin@ironcore.fit');
-  const [password, setPassword] = useState('password');
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] =  useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    // Simulate API delay
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate('/dashboard'); // ✅ redirect instead of onLogin()
-    }, 1200);
+    try {
+      const res = await axiosInstance.post("/auth/login", {
+        identifier,
+        password
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      navigate("/dashboard");
+
+    } catch (error) {
+      alert(error.response?.data?.message);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
-      {/* Cinematic Background Image - Product/Equipment Based */}
+    
       <div className="absolute inset-0 z-0">
         <img 
           src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=2000" 
@@ -31,7 +40,6 @@ const LoginPage = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></div>
       </div>
 
-      {/* Animated Overlay Blurs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 z-0">
         <div className="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-lime-500/20 rounded-full blur-[120px] animate-pulse"></div>
         <div 
@@ -69,12 +77,12 @@ const LoginPage = () => {
               </label>
               <div className="relative">
                 <input
-                  type="email"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50 transition-all outline-none text-sm"
-                  placeholder="admin@ironcore.fit"
+                  placeholder="Username or Email"
                 />
               </div>
             </div>
@@ -90,7 +98,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-4 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-lime-500/50 focus:border-lime-500/50 transition-all outline-none text-sm"
-                  placeholder="••••••••"
+                  placeholder="Password"
                 />
               </div>
             </div>

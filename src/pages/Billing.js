@@ -41,7 +41,6 @@ const Billing = () => {
     }
   };
 
-  // 🔥 Convert backend data → UI format (NO UI CHANGE)
   const fetchBillings = async () => {
     try {
       const res = await getBillings();

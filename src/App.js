@@ -7,9 +7,11 @@ import TrainerManagement from './pages/TrainerManagement';
 import PackageManagement from "./pages/PackageManagement";
 import Billing from './pages/Billing';
 import Inventory from './pages/Inventory';
-import Attendance from './pages/Attendance';
+import AttendancePage from './pages/Attendance';
+import Employee from './pages/Employee';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AICoach from './pages/AICoach';
 
 <ToastContainer position="top-right" autoClose={3000} />
 
@@ -24,7 +26,9 @@ function App() {
         <Route path="/packages" element={<PackageManagement />} />
         <Route path="/billing" element={<Billing />} />
         <Route path="/inventory" element={<Inventory />} />
-        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/attendance" element={<AttendancePage />} />
+        <Route path="/employee" element={<Employee />} />
+        <Route path="/ai-coach" element={<AICoach />} />
       </Routes>
     </BrowserRouter>
   );

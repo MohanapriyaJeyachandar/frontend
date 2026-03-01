@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { path: '/inventory', label: 'Inventory', Icon: Icons.Inventory },
     { path: '/attendance', label: 'Attendance', Icon: Icons.Attendance },
     { path: '/ai-coach', label: 'AI Coach', Icon: Icons.AICoach },
+    { path: '/employee', label: 'Employee Management', Icon: Icons.Employee },
   ];
 
   return (

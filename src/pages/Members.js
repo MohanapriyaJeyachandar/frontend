@@ -12,15 +12,15 @@ const Members = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
-    gender: 'Male',
-    membershipType: MembershipType?.MONTHLY || 'Monthly',
-    paymentStatus: PaymentStatus?.PAID || 'Paid',
+    gender: 'male',
+    membershipType: 'monthly',
+    paymentStatus: 'paid',
     weight: 70,
     height: 170,
     age: 25,
     healthConditions: [],
-    goal: 'General Fitness'
-  });
+    goal: 'general fitness'
+});
 
   const fetchmember = async () =>{
     try{
@@ -29,7 +29,7 @@ const Members = () => {
     }
     catch(err)
     {
-       console.err("Erro fetching member:", err);
+       console.error("Erro fetching member:", err);
     }
   };
 
@@ -75,59 +75,36 @@ const Members = () => {
   setIsModalOpen(true);
 };
 
-    // const handleSubmit = (e) => {
-    //   e.preventDefault();
-
-    //   if (editingMember) {
-    //     setMembers(members.map(m =>
-    //       m.id === editingMember.id ? { ...editingMember, ...formData } : m
-    //     ));
-    //   } else {
-    //     setMembers([
-    //       ...members,
-    //       {
-    //         ...formData,
-    //         id: `MEM-${Math.floor(Math.random() * 10000)}`
-    //       }
-    //     ]);
-    //   }
-
-    //   setIsModalOpen(false);
-    // };
     
-    const handleSubmit = async (e) =>{
-      e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-        const payload = {
-          name : formData.fullName,
-          contactPhone : formData.phone,
-          genderIdentity : formData.gender?.toLowerCase(),
-          biologicalAge : formData.age,
-          mass : formData.weight,
-          structure : formData.height,
-          fitnessGoal: formData.goal?.toLowerCase(),
-          membershipPlan : formData.membershipType?.toLowerCase(),
-          ledgerStatus : formData.paymentStatus?.toLowerCase(),
-          medicalConditions : formData.healthConditions?.join(", "),
-        };
+  const payload = {
+    name: formData.fullName.trim(),
+    contactPhone: formData.phone.trim(),
+    genderIdentity: formData.gender.toLowerCase(),
+    biologicalAge: Number(formData.age),
+    mass: Number(formData.weight),
+    structure: Number(formData.height),
+    fitnessGoal: formData.goal.toLowerCase(),
+    membershipPlan: formData.membershipType.toLowerCase(),
+    ledgerStatus: formData.paymentStatus.toLowerCase(),
+    medicalConditions: formData.healthConditions.join(", ")
+  };
 
-        try{
-          if (editingMember)
-          {
-            await updatemembers(editingMember._id, payload);
-          }
-          else{
-            await createmembers(payload);
-          }
+  try {
+    if (editingMember) {
+      await updatemembers(editingMember._id, payload);
+    } else {
+      await createmembers(payload);
+    }
 
-          setIsModalOpen(false);
-          fetchmember();
-        }
-        catch(err)
-        {
-          console.error(err);
-        }
-    };
+    setIsModalOpen(false);
+    fetchmember();
+  } catch (err) {
+    console.error("Submission Error:", err.response?.data || err.message);
+  }
+};
 
   const handleDelete = async (id) =>{
     try{
@@ -235,13 +212,24 @@ const Members = () => {
                         onClick={() => handleOpenEdit(member)}
                         className="px-4 py-2 bg-slate-700 rounded-xl text-white"
                       >
-                        Edit
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                        <path d="m15 5 4 4"/>
+                      </svg>
                       </button>
                       <button
                         onClick={() => handleDelete(member._id)}
                         className="ml-2 px-4 py-2 bg-red-500 rounded-xl text-white"
                       >
-                        Delete
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18"/>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                      </svg>
                       </button>
                     </td>
                   </tr>
