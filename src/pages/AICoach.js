@@ -52,22 +52,22 @@ const AICoach = () => {
       <div className="flex-1 ml-0 md:ml-64 p-4 md:p-8 space-y-6 md:space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
-          <div>
+          {/* <div>
             <h1 className="text-4xl font-black text-white tracking-tighter">
               IRONCORE FITNESS
             </h1>
             <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-1">
               AI-Powered Training & Nutrition Report
             </p>
-          </div>
-          <div className="text-right">
+          </div> */}
+          {/* <div className="text-right">
             <p className="text-sm font-bold text-white">
               Generated: {new Date().toLocaleDateString()}
             </p>
             <p className="text-xs text-slate-400">
               Report ID: IC-{Math.floor(Math.random() * 100000)}
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* AI Coach Title and Actions */}
@@ -109,76 +109,103 @@ const AICoach = () => {
               <h3 className="text-lg md:text-xl font-bold text-white mb-2">
                 Member Assessment
               </h3>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm"
-                  value={memberData.fullName}
-                  onChange={(e) =>
-                    setMemberData({ ...memberData, fullName: e.target.value })
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Age"
-                  value={memberData.age}
-                  onChange={(e) =>
-                    setMemberData({
-                      ...memberData,
-                      age: parseInt(e.target.value) || 0
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Weight (kg)"
-                  value={memberData.weight}
-                  onChange={(e) =>
-                    setMemberData({
-                      ...memberData,
-                      weight: parseInt(e.target.value) || 0
-                    })
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Height (cm)"
-                  value={memberData.height}
-                  onChange={(e) =>
-                    setMemberData({
-                      ...memberData,
-                      height: parseInt(e.target.value) || 0
-                    })
-                  }
-                />
+              <div className="space-y-5">
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {fitnessGoals.map((g) => (
-                    <button
-                      key={g}
-                      onClick={() =>
-                        setMemberData({ ...memberData, goal: g })
-                      }
-                      className={`px-3 py-2 rounded-lg border ${
-                        memberData.goal === g
-                          ? "bg-lime-500 text-slate-900"
-                          : "text-white border-slate-700"
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  ))}
-                </div>
+  {/* Full Name */}
+  <input
+    type="text"
+    placeholder="Full Name"
+    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500"
+    value={memberData.fullName}
+    onChange={(e) =>
+      setMemberData({ ...memberData, fullName: e.target.value })
+    }
+  />
 
-                <button
-                  onClick={handleGenerate}
-                  disabled={loading}
-                  className="w-full bg-lime-500 text-slate-900 py-4 rounded-xl font-black"
-                >
-                  {loading ? "CALCULATING..." : "GENERATE PLAN"}
-                </button>
-              </div>
+  {/* Age & Gender */}
+  <div className="grid grid-cols-2 gap-4">
+    <input
+      type="number"
+      placeholder="Age"
+      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500"
+      value={memberData.age}
+      onChange={(e) =>
+        setMemberData({
+          ...memberData,
+          age: parseInt(e.target.value) || 0
+        })
+      }
+    />
+
+    <select
+      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500"
+      value={memberData.gender}
+      onChange={(e) =>
+        setMemberData({ ...memberData, gender: e.target.value })
+      }
+    >
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+  </div>
+
+  {/* Weight & Height */}
+  <div className="grid grid-cols-2 gap-4">
+    <input
+      type="number"
+      placeholder="Weight (kg)"
+      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500"
+      value={memberData.weight}
+      onChange={(e) =>
+        setMemberData({
+          ...memberData,
+          weight: parseInt(e.target.value) || 0
+        })
+      }
+    />
+
+    <input
+      type="number"
+      placeholder="Height (cm)"
+      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-lime-500"
+      value={memberData.height}
+      onChange={(e) =>
+        setMemberData({
+          ...memberData,
+          height: parseInt(e.target.value) || 0
+        })
+      }
+    />
+  </div>
+
+  {/* Fitness Goals */}
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+    {fitnessGoals.map((g) => (
+      <button
+        key={g}
+        type="button"
+        onClick={() => setMemberData({ ...memberData, goal: g })}
+        className={`px-3 py-2 rounded-lg border text-sm font-semibold transition ${
+          memberData.goal === g
+            ? "bg-lime-500 text-slate-900 border-lime-500"
+            : "text-white border-slate-700 hover:bg-slate-800"
+        }`}
+      >
+        {g}
+      </button>
+    ))}
+  </div>
+
+  {/* Generate Button */}
+  <button
+    onClick={handleGenerate}
+    disabled={loading}
+    className="w-full bg-lime-500 hover:bg-lime-400 text-slate-900 py-4 rounded-xl font-black tracking-wide transition"
+  >
+    {loading ? "CALCULATING..." : "GENERATE PLAN"}
+  </button>
+
+</div>
             </div>
           </div>
         )}

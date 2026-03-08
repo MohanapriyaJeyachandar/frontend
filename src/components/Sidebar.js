@@ -13,8 +13,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     { path: '/billing', label: 'Billing', Icon: Icons.Billing },
     { path: '/inventory', label: 'Inventory', Icon: Icons.Inventory },
     { path: '/attendance', label: 'Attendance', Icon: Icons.Attendance },
+    { path: '/reports', label: 'Reports', Icon: Icons.Reports },
     { path: '/ai-coach', label: 'AI Coach', Icon: Icons.AICoach },
     { path: '/employee', label: 'Employee Management', Icon: Icons.Employee },
+    { path: '/settings', label: 'Settings', Icon: Icons.Settings },
+    
   ];
 
   return (
@@ -25,7 +28,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}
     >
-      {/* Logo */}
+
       <div className="p-6 flex items-center justify-between">
         <h1 className="text-xl font-bold text-white">IRONCORE</h1>
 
@@ -37,7 +40,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </button>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         {menuItems.map((item) => (
           <NavLink
@@ -57,7 +59,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         ))}
       </nav>
 
-      {/* Footer */}
       <div className="p-4 border-t border-slate-800">
         <button
           onClick={() => navigate('/')}

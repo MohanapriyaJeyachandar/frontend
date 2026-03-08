@@ -1,7 +1,14 @@
+// src/pages/AttendancePage.jsx
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
-import axiosInstance from "../services/axios";
 import QRCode from "react-qr-code";
+import {
+  getMembers,
+  getRecords,
+  checkInMember,
+  checkOutMember,
+  deleteRecord,
+} from "../api/attendanceApi";
 
 const AttendancePage = () => {
   const [records, setRecords] = useState([]);
@@ -10,87 +17,76 @@ const AttendancePage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [isOpen, setIsOpen] = useState(true);
 
-  const peakData = [
-    { time: "06:00 AM", capacity: 45 },
-    { time: "08:00 AM", capacity: 80 },
-    { time: "12:00 PM", capacity: 30 },
-    { time: "06:00 PM", capacity: 95 },
-  ];
+  // Define time slots
+const timeSlots = ["06:00", "08:00", "12:00", "18:00"]; // in 24h format
+// Calculate dynamic peak flow
+const dynamicPeakData = timeSlots.map((time) => {
+  const [hour, minute] = time.split(":").map(Number);
 
-  const token = localStorage.getItem("token");
+  // Count how many members checked in during this hour
+  const count = records.filter((r) => {
+    const checkInHour = new Date(r.checkIn).getHours();
+    return checkInHour === hour;
+  }).length;
+
+  // Assuming max capacity = 100 for percentage calculation
+  const capacity = Math.min(Math.round((count / 100) * 100), 100); 
+
+  return { time: `${hour.toString().padStart(2, "0")}:00`, capacity };
+});
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Fetch members and records
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const membersRes = await axiosInstance.get("/attendance/members", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setMembers(membersRes.data);
+        const membersData = await getMembers();
+        setMembers(membersData);
 
-        const recordsRes = await axiosInstance.get("/attendance/records", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setRecords(recordsRes.data);
+        const recordsData = await getRecords();
+        setRecords(recordsData);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error(err);
       }
     };
     fetchData();
-  }, [token]);
+  }, []);
 
   // Manual Check-In
   const handleManualLog = async (e) => {
     e.preventDefault();
     if (!selectedMemberId) return;
-
     const member = members.find((m) => m._id === selectedMemberId);
     if (!member) return;
 
     try {
-      const res = await axiosInstance.post(
-        "/attendance/checkin",
-        {
-          memberId: member._id,
-          memberName: member.name,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setRecords((prev) => [res.data, ...prev]);
+      const newRecord = await checkInMember(member._id, member.name);
+      setRecords((prev) => [newRecord, ...prev]);
       setIsModalOpen(false);
       setSelectedMemberId("");
     } catch (err) {
-      console.error("Error in check-in:", err.response?.data || err);
+      console.error(err);
     }
   };
 
   // Checkout
   const handleCheckout = async (rec) => {
     try {
-      const res = await axiosInstance.post(
-        `/attendance/checkout/${rec._id}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const updatedRecord = await checkOutMember(rec._id);
       setRecords((prev) =>
-        prev.map((r) => (r._id === rec._id ? res.data : r))
+        prev.map((r) => (r._id === rec._id ? updatedRecord : r))
       );
     } catch (err) {
-      console.error("Error in checkout:", err.response?.data || err);
+      console.error(err);
     }
   };
 
   // Delete
   const handleDelete = async (id) => {
     try {
-      await axiosInstance.delete(`/attendance/delete/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await deleteRecord(id);
       setRecords((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
-      console.error("Error in delete:", err.response?.data || err);
+      console.error(err);
     }
   };
 
@@ -106,24 +102,21 @@ const AttendancePage = () => {
         >
           Open Menu
         </button>
+
         <header className="flex flex-col md:flex-row md:justify-between md:items-center space-y-4 md:space-y-0">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-              Facility Access
-            </h2>
-            <p className="text-slate-400 text-sm font-medium uppercase tracking-widest mt-1">
-              Welcome, {user?.username || "User"} | Real-Time Entry
+            <h2 className="text-2xl md:text-3xl font-bold">Facility Access</h2>
+            <p className="text-slate-400 text-sm uppercase mt-1">
+              Real-Time Occupancy & Entry Tracking
             </p>
           </div>
-
           <div className="flex space-x-3">
-            <button className="bg-slate-800 text-white px-5 py-3 rounded-xl border border-slate-700 font-bold text-sm hover:bg-slate-700 transition-all">
+            <button className="bg-slate-800 text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition-all">
               Export Manifest
             </button>
-
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-lime-500 text-slate-900 px-6 py-3 rounded-xl font-black hover:bg-lime-400 transition-all shadow-xl shadow-lime-500/20 active:scale-95"
+              className="bg-lime-500 text-slate-900 px-6 py-3 rounded-xl font-black hover:bg-lime-400 transition-all shadow-xl shadow-lime-500/20"
             >
               Manual Check-In
             </button>
@@ -131,7 +124,6 @@ const AttendancePage = () => {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
           {/* Attendance Table */}
           <div className="lg:col-span-2 bg-slate-800/40 rounded-[2.5rem] border border-slate-700/50 overflow-hidden shadow-2xl">
             <div className="p-6 border-b border-slate-700/50 bg-slate-900/40 flex justify-between items-center">
@@ -162,23 +154,21 @@ const AttendancePage = () => {
                       <td className="px-6 py-5 font-mono text-xs text-slate-400">
                         {rec.checkOut ? new Date(rec.checkOut).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : "--:--"}
                       </td>
-                      <td className="px-6 py-5 text-right">
-                        <div className="flex justify-end space-x-2">
-                          {!rec.checkOut && (
-                            <button
-                              onClick={() => handleCheckout(rec)}
-                              className="bg-lime-500 text-slate-950 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-lime-400 transition-all"
-                            >
-                              Check-Out
-                            </button>
-                          )}
+                      <td className="px-6 py-5 text-right flex justify-end space-x-2">
+                        {!rec.checkOut && (
                           <button
-                            onClick={() => handleDelete(rec._id)}
-                            className="p-2 text-slate-500 hover:text-red-500 bg-slate-800 rounded-lg transition-all"
+                            onClick={() => handleCheckout(rec)}
+                            className="bg-lime-500 text-slate-950 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-lime-400 transition-all"
                           >
-                            Delete
+                            Check-Out
                           </button>
-                        </div>
+                        )}
+                        <button
+                          onClick={() => handleDelete(rec._id)}
+                          className="p-2 text-slate-500 hover:text-red-500 bg-slate-800 rounded-lg transition-all"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -197,21 +187,20 @@ const AttendancePage = () => {
           {/* Right Side Cards */}
           <div className="space-y-6">
             {/* PEAK FLOW ANALYTICS */}
-            <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-2xl">
-              <h4 className="text-lg font-black text-white uppercase mb-4">PEAK FLOW ANALYTICS</h4>
-              {peakData.map((p, idx) => (
-                <div key={idx} className="mb-3">
-                  <div className="flex justify-between text-[10px] mb-1">
-                    <span>{p.time}</span>
-                    <span>{p.capacity}% Capacity</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-700 rounded-full">
-                    <div className="h-2 bg-lime-500 rounded-full" style={{ width: `${p.capacity}%` }} />
-                  </div>
+          <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-2xl">
+            <h4 className="text-lg font-black text-white uppercase mb-4">PEAK FLOW ANALYTICS</h4>
+            {dynamicPeakData.map((p, idx) => (
+              <div key={idx} className="mb-3">
+                <div className="flex justify-between text-[10px] mb-1">
+                  <span>{p.time}</span>
+                  <span>{p.capacity}% Capacity</span>
                 </div>
-              ))}
-            </div>
-
+                <div className="w-full h-2 bg-slate-700 rounded-full">
+                  <div className="h-2 bg-lime-500 rounded-full" style={{ width: `${p.capacity}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
             {/* QR CODE CARD */}
             <div className="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-2xl flex flex-col items-center">
               <h4 className="text-lg font-black text-white uppercase mb-4 text-center">

@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-
-const chartData = [
-  { name: 'Mon', revenue: 0 },
-  { name: 'Tue', revenue: 0 },
-  { name: 'Wed', revenue: 0 },
-  { name: 'Thu', revenue: 0 },
-  { name: 'Fri', revenue: 0 },
-  { name: 'Sat', revenue: 0 },
-  { name: 'Sun', revenue: 0 },
-];
+import { getmembers } from "../api/memberApi";
+import { getBillings } from "../api/billingApi";
+import { getUsers } from "../api/userApi";
+import { getAttendanceRecords } from "../api/attendanceApi";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
 
 const StatCard = ({ title, value, change, trend, onClick }) => (
   <div
@@ -39,29 +42,109 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
 
-  // Safe default arrays (no reduce error)
-  const members = [];
-  const trainers = [];
-  const attendance = [];
-  const invoices = [];
+  // ----------------- MEMBERS -----------------
+  const [members, setMembers] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [billings, setBillings] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [chartData, setChartData] = useState([
 
-  const totalRevenue = invoices.reduce(
-    (acc, inv) => acc + (inv.amount || 0),
-    0
-  );
+    { name: 'Mon', revenue: 0 },
+    { name: 'Tue', revenue: 0 },
+    { name: 'Wed', revenue: 0 },
+    { name: 'Thu', revenue: 0 },
+    { name: 'Fri', revenue: 0 },
+    { name: 'Sat', revenue: 0 },
+    { name: 'Sun', revenue: 0 },
+  ]);
+
+  // Fetch members
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await getmembers();
+        setMembers(res.data);
+      } catch (error) {
+        console.log("Error fetching members", error);
+      }
+    };
+    fetchMembers();
+  }, []);
+
+  //getcheckins
+  useEffect(() => {
+  const fetchCheckins = async () => {
+    try {
+      const res = await getAttendanceRecords();
+      setAttendance(res);
+    } catch (error) {
+      console.log("Error fetching checkins", error);
+    }
+  };
+
+  fetchCheckins();
+}, []);
+
+  // Fetch users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await getUsers();
+        setUsers(res.data);
+      } catch (error) {
+        console.log("Error fetching users", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // Fetch billings
+  useEffect(() => {
+    const fetchBillings = async () => {
+      try {
+        const res = await getBillings();
+        setBillings(res.data.data);
+      } catch (error) {
+        console.log("Error fetching billings", error);
+      }
+    };
+    fetchBillings();
+  }, []);
+
+  // Compute chart data whenever billings change
+  useEffect(() => {
+    if (billings.length > 0) {
+      const revenueByDay = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun
+
+      billings.forEach((bill) => {
+        const date = new Date(bill.createdAt);
+        const dayIndex = date.getDay(); // 0 = Sun, 1 = Mon, ...
+        const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1; // shift Sunday to last
+        revenueByDay[adjustedIndex] += bill.valuation || 0;
+      });
+
+      setChartData([
+        { name: 'Mon', revenue: revenueByDay[0] },
+        { name: 'Tue', revenue: revenueByDay[1] },
+        { name: 'Wed', revenue: revenueByDay[2] },
+        { name: 'Thu', revenue: revenueByDay[3] },
+        { name: 'Fri', revenue: revenueByDay[4] },
+        { name: 'Sat', revenue: revenueByDay[5] },
+        { name: 'Sun', revenue: revenueByDay[6] },
+      ]);
+    }
+  }, [billings]);
 
   const activeMembers = members.length;
+  const totalRevenue = billings.reduce((acc, bill) => acc + (bill.valuation || 0), 0);
+  const userCount = users.length;
+  const checkin = attendance.length;
 
   return (
     <div className="flex bg-slate-950 min-h-screen">
-      
-      {/* ✅ SIDEBAR */}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      {/* ✅ MAIN CONTENT */}
       <div className="flex-1 ml-0 md:ml-64 p-4 md:p-8 space-y-6 md:space-y-8 animate-in fade-in duration-700">
-
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden mb-4 bg-lime-500 text-black px-4 py-2 rounded"
           onClick={() => setIsOpen(true)}
@@ -69,7 +152,6 @@ const Dashboard = () => {
           Open Menu
         </button>
 
-        {/* HEADER */}
         <header className="flex flex-col md:flex-row md:justify-between md:items-end space-y-4 md:space-y-0">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
@@ -112,14 +194,14 @@ const Dashboard = () => {
           />
           <StatCard
             title="Staff Count"
-            value={trainers.length}
+            value={userCount}
             change="0%"
             trend="up"
-            onClick={() => navigate('/trainers')}
+            onClick={() => navigate('/employee')}
           />
           <StatCard
             title="Check-ins"
-            value={attendance.length}
+            value={checkin}
             change="0%"
             trend="up"
             onClick={() => navigate('/attendance')}
@@ -127,40 +209,31 @@ const Dashboard = () => {
         </div>
 
         {/* REVENUE SECTION */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div className="lg:col-span-2 bg-slate-800/50 p-8 rounded-[2.5rem] border border-slate-700/50">
             <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8">
               Revenue Analytics
             </h4>
 
-            <div className="h-64 flex items-center justify-center text-slate-600">
-              No data available yet
-            </div>
-          </div>
-
-          <div className="bg-slate-800/50 p-8 rounded-[2.5rem] border border-slate-700/50">
-            <h4 className="text-xl font-black text-white uppercase tracking-tight mb-8">
-              Quick Statistics
-            </h4>
-
-            <div className="space-y-6">
-              <div className="p-5 bg-slate-900/50 rounded-2xl border border-slate-700/50">
-                <p className="text-xs text-slate-500 uppercase font-black mb-1">
-                  Conversion Rate
-                </p>
-                <p className="text-2xl font-black text-white">0%</p>
-              </div>
-
-              <div className="p-5 bg-slate-900/50 rounded-2xl border border-slate-700/50">
-                <p className="text-xs text-slate-500 uppercase font-black mb-1">
-                  Attrition
-                </p>
-                <p className="text-2xl font-black text-white">0%</p>
-              </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="name" stroke="#fff" />
+                  <YAxis stroke="#fff" />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#84cc16"
+                    strokeWidth={3}
+                    dot={{ r: 4, stroke: '#84cc16', strokeWidth: 2, fill: '#84cc16' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

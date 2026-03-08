@@ -40,7 +40,6 @@ const Employee = () => {
       fetchUsers();
       setIsModalOpen(false);
 
-      // Reset form
       setFormData({
         name: "",
         phone: "",
@@ -73,7 +72,6 @@ const Employee = () => {
 
       <div className="flex-1 ml-0 md:ml-64 p-4 md:p-8 space-y-8">
 
-        {/* HEADER */}
         <header className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold text-white">
@@ -92,7 +90,6 @@ const Employee = () => {
           </button>
         </header>
 
-        {/* SUMMARY CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-slate-800/40 p-6 rounded-[2rem] border border-slate-700/50">
             <p className="text-slate-500 text-xs uppercase">Total Employees</p>
@@ -116,7 +113,6 @@ const Employee = () => {
           </div>
         </div>
 
-        {/* TABLE */}
         <div className="bg-slate-800/40 rounded-[2.5rem] border border-slate-700/50 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[900px]">
@@ -168,7 +164,6 @@ const Employee = () => {
           </div>
         </div>
 
-        {/* MODAL */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-md">
             <div className="bg-slate-900 border border-slate-700 w-full max-w-2xl rounded-[2.5rem] p-8">

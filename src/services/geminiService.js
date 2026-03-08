@@ -7,7 +7,8 @@ const ai = new GoogleGenAI({
 export const getWorkoutPlan = async (memberData) => {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      // model: "gemini-3-flash-preview",
+      model: "gemini-2.0-flash",
       contents: `Generate a detailed 7-day workout and diet plan for a gym member with these details:
       Name: ${memberData.fullName}
       Age: ${memberData.age}
